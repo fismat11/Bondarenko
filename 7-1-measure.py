@@ -38,32 +38,41 @@ try:
 
     #зарядка конденсатора, запис показаний в процессе
     print('начало зарядки конденсатора')
+    napr_last = 0
     while napr<256*0.25:
         napr=adc()
         result_ismer.append(napr)
         time.sleep(0)
+        print (napr)
         count+=1
         gpio.output(leds, perev(napr))
+        if napr_last - napr >= 1:
+            break
+        else:
+            napr_last = napr
 
     gpio.setup(troyka,gpio.OUT, initial=gpio.LOW)
 
-    #разрядка конденсатора, запис показаний в процессе
+    #разрядка конденсатора, запись показаний в процессе
     print('начало разрядки конденсатора')
     while napr>256*0.02:
         napr=adc()
         result_ismer.append(napr)
         time.sleep(0)
+        print(napr)
         count+=1
         gpio.output(leds, perev(napr))
+        
 
     time_experiment=time.time()-time_start
 
     #запись данных в файлы
     print('запись данных в файл')
-    with open('data.txt', 'w') as f:
+    print (result_ismer)
+    with open('\home\b04-205\Desktop\data.txt', 'w') as f:
         for i in result_ismer:
             f.write(str(i) + '\n')
-    with open('settings.txt', 'w') as f:
+    with open('\home\b04-205\Desktop\settings.txt', 'w') as f:
         f.write(str(1/time_experiment/count) + '\n')
         f.write('0.01289')
     
